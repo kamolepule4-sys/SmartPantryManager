@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F8F2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RECIPE"
+            android:textColor="#315C42"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/recipeDetailNameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chicken Pasta"
+            android:textColor="#20392B"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="28dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ingredients"
+            android:textColor="#315C42"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/recipeDetailIngredientsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chicken, Pasta, Tomato, Onion"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:layout_marginBottom="28dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Preparation"
+            android:textColor="#315C42"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/recipeDetailStepsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cook the pasta. Cook the chicken in a pan..."
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:layout_marginBottom="30dp" />
+
+        <Button
+            android:id="@+id/backToRecipesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back to Recipes"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#315C42" />
+
+    </LinearLayout>
+
+</ScrollView>

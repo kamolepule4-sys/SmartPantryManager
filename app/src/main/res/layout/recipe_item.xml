@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="18dp"
+    android:layout_marginBottom="12dp"
+    android:background="#E8EDE7">
+
+    <TextView
+        android:id="@+id/recipeNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chicken Pasta"
+        android:textColor="#20392B"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/recipeIngredientsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chicken, Pasta, Tomato, Onion"
+        android:textColor="#555555"
+        android:textSize="15sp"
+        android:layout_marginBottom="14dp" />
+
+    <Button
+        android:id="@+id/viewRecipeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Recipe"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#315C42" />
+
+</LinearLayout>
