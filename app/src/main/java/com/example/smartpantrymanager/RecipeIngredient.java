@@ -8,7 +8,6 @@ public class RecipeIngredient {
     private double requiredQuantity;
     private String unit;
 
-
     public RecipeIngredient(
             int id,
             int recipeId,
@@ -23,7 +22,6 @@ public class RecipeIngredient {
         this.unit = unit;
     }
 
-
     public RecipeIngredient(
             int recipeId,
             String ingredientName,
@@ -36,60 +34,47 @@ public class RecipeIngredient {
         this.unit = unit;
     }
 
-
     public int getId() {
         return id;
     }
-
-
-    public int getRecipeId() {
-        return recipeId;
-    }
-
-
-    public String getIngredientName() {
-        return ingredientName;
-    }
-
-
-    public double getRequiredQuantity() {
-        return requiredQuantity;
-    }
-
-
-    public String getUnit() {
-        return unit;
-    }
-
 
     public void setId(int id) {
         this.id = id;
     }
 
+    public int getRecipeId() {
+        return recipeId;
+    }
 
     public void setRecipeId(int recipeId) {
         this.recipeId = recipeId;
     }
 
+    public String getIngredientName() {
+        return ingredientName;
+    }
 
     public void setIngredientName(
             String ingredientName) {
 
-        this.ingredientName =
-                ingredientName;
+        this.ingredientName = ingredientName;
     }
 
+    public double getRequiredQuantity() {
+        return requiredQuantity;
+    }
 
     public void setRequiredQuantity(
             double requiredQuantity) {
 
-        this.requiredQuantity =
-                requiredQuantity;
+        this.requiredQuantity = requiredQuantity;
     }
 
+    public String getUnit() {
+        return unit;
+    }
 
     public void setUnit(String unit) {
-
         this.unit = unit;
     }
 }

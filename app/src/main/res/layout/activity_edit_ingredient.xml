@@ -112,7 +112,7 @@
             android:id="@+id/editExpiryDateInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="e.g. 2026-10-15"
+            android:hint="YYYY-MM-DD"
             android:inputType="date"
             android:padding="14dp"
             android:backgroundTint="#315C42"

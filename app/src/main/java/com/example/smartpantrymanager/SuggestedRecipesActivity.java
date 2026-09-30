@@ -33,17 +33,31 @@ public class SuggestedRecipesActivity
                         R.id.recipeMessageText
                 );
 
-
         recipeRecyclerView.setLayoutManager(
                 new LinearLayoutManager(this)
         );
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        loadSuggestedRecipes();
+    }
+
+    private void loadSuggestedRecipes() {
+
+        /*
+         * Make sure the built-in recipes exist
+         * before checking which recipes match
+         * the current pantry.
+         */
+        RecipeDatabaseSeeder.seedRecipes(this);
 
         ArrayList<Recipe> matchingRecipes =
                 RecipeMatcher.getMatchingRecipes(
                         this
                 );
-
 
         if (matchingRecipes.isEmpty()) {
 
@@ -59,13 +73,11 @@ public class SuggestedRecipesActivity
             );
         }
 
-
         RecipeAdapter adapter =
                 new RecipeAdapter(
                         this,
                         matchingRecipes
                 );
-
 
         recipeRecyclerView.setAdapter(
                 adapter

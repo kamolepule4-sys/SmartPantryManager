@@ -16,8 +16,8 @@ import java.util.ArrayList;
 public class RecipeAdapter
         extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
-    private Context context;
-    private ArrayList<Recipe> recipes;
+    private final Context context;
+    private final ArrayList<Recipe> recipes;
 
     public RecipeAdapter(
             Context context,
@@ -34,7 +34,7 @@ public class RecipeAdapter
             int viewType) {
 
         View view =
-                LayoutInflater.from(context)
+                LayoutInflater.from(parent.getContext())
                         .inflate(
                                 R.layout.recipe_item,
                                 parent,
@@ -57,7 +57,8 @@ public class RecipeAdapter
         );
 
         holder.recipeIngredientsText.setText(
-                recipe.getIngredients()
+                "Ingredients: "
+                        + recipe.getIngredients()
         );
 
         holder.viewRecipeButton.setOnClickListener(

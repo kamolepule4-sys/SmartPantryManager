@@ -8,14 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME =
-            "SmartPantry.db";
+    private static final String DATABASE_NAME = "SmartPantry.db";
 
     private static final int DATABASE_VERSION = 2;
 
-
     public DatabaseHelper(Context context) {
-
         super(
                 context,
                 DATABASE_NAME,
@@ -24,46 +21,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String createIngredientsTable =
+        db.execSQL(
                 "CREATE TABLE ingredients (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "name TEXT NOT NULL," +
-                        "quantity REAL NOT NULL," +
-                        "unit TEXT NOT NULL," +
-                        "expiryDate TEXT," +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "name TEXT NOT NULL, " +
+                        "quantity REAL NOT NULL, " +
+                        "unit TEXT NOT NULL, " +
+                        "expiryDate TEXT, " +
                         "category TEXT" +
-                        ")";
+                        ")"
+        );
 
-        db.execSQL(createIngredientsTable);
-
-
-        String createRecipesTable =
+        db.execSQL(
                 "CREATE TABLE recipes (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "name TEXT NOT NULL," +
-                        "ingredients TEXT NOT NULL," +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "name TEXT NOT NULL, " +
+                        "ingredients TEXT NOT NULL, " +
                         "preparationSteps TEXT NOT NULL" +
-                        ")";
+                        ")"
+        );
 
-        db.execSQL(createRecipesTable);
-
-
-        String createRecipeIngredientsTable =
+        db.execSQL(
                 "CREATE TABLE recipe_ingredients (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "recipeId INTEGER NOT NULL," +
-                        "ingredientName TEXT NOT NULL," +
-                        "requiredQuantity REAL NOT NULL," +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "recipeId INTEGER NOT NULL, " +
+                        "ingredientName TEXT NOT NULL, " +
+                        "requiredQuantity REAL NOT NULL, " +
                         "unit TEXT NOT NULL" +
-                        ")";
-
-        db.execSQL(createRecipeIngredientsTable);
+                        ")"
+        );
     }
-
 
     @Override
     public void onUpgrade(
@@ -86,9 +76,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-
     // =========================
-    // INGREDIENT DATABASE
+    // INGREDIENTS
     // =========================
 
     public long addIngredient(
@@ -99,7 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String category) {
 
         SQLiteDatabase db =
-                this.getWritableDatabase();
+                getWritableDatabase();
 
         ContentValues values =
                 new ContentValues();
@@ -117,11 +106,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public Cursor getAllIngredients() {
 
         SQLiteDatabase db =
-                this.getReadableDatabase();
+                getReadableDatabase();
 
         return db.query(
                 "ingredients",
@@ -134,7 +122,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public int updateIngredient(
             int id,
             String name,
@@ -144,7 +131,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String category) {
 
         SQLiteDatabase db =
-                this.getWritableDatabase();
+                getWritableDatabase();
 
         ContentValues values =
                 new ContentValues();
@@ -165,11 +152,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public int deleteIngredient(int id) {
 
         SQLiteDatabase db =
-                this.getWritableDatabase();
+                getWritableDatabase();
 
         return db.delete(
                 "ingredients",
@@ -180,9 +166,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     // =========================
-    // RECIPE DATABASE
+    // RECIPES
     // =========================
 
     public long addRecipe(
@@ -191,7 +176,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String preparationSteps) {
 
         SQLiteDatabase db =
-                this.getWritableDatabase();
+                getWritableDatabase();
 
         ContentValues values =
                 new ContentValues();
@@ -218,11 +203,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public Cursor getAllRecipes() {
 
         SQLiteDatabase db =
-                this.getReadableDatabase();
+                getReadableDatabase();
 
         return db.query(
                 "recipes",
@@ -235,7 +219,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public long addRecipeIngredient(
             int recipeId,
             String ingredientName,
@@ -243,7 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String unit) {
 
         SQLiteDatabase db =
-                this.getWritableDatabase();
+                getWritableDatabase();
 
         ContentValues values =
                 new ContentValues();
@@ -275,12 +258,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-
     public Cursor getRecipeIngredients(
             int recipeId) {
 
         SQLiteDatabase db =
-                this.getReadableDatabase();
+                getReadableDatabase();
 
         return db.query(
                 "recipe_ingredients",

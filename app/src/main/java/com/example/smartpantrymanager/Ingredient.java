@@ -9,7 +9,6 @@ public class Ingredient {
     private String expiryDate;
     private String category;
 
-
     public Ingredient(
             String name,
             double quantity,
@@ -23,7 +22,6 @@ public class Ingredient {
         this.expiryDate = expiryDate;
         this.category = category;
     }
-
 
     public Ingredient(
             int id,
@@ -41,61 +39,49 @@ public class Ingredient {
         this.category = category;
     }
 
-
     public int getId() {
         return id;
     }
-
 
     public void setId(int id) {
         this.id = id;
     }
 
-
     public String getName() {
         return name;
     }
-
-
-    public double getQuantity() {
-        return quantity;
-    }
-
-
-    public String getUnit() {
-        return unit;
-    }
-
-
-    public String getExpiryDate() {
-        return expiryDate;
-    }
-
-
-    public String getCategory() {
-        return category;
-    }
-
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public double getQuantity() {
+        return quantity;
+    }
 
     public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 
+    public String getUnit() {
+        return unit;
+    }
 
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
+    public String getExpiryDate() {
+        return expiryDate;
+    }
 
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
 
+    public String getCategory() {
+        return category;
+    }
 
     public void setCategory(String category) {
         this.category = category;

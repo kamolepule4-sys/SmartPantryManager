@@ -5,33 +5,29 @@ import android.database.Cursor;
 
 public class RecipeDatabaseSeeder {
 
-    public static void seedRecipes(
-            Context context) {
+    public static void seedRecipes(Context context) {
 
         DatabaseHelper databaseHelper =
                 new DatabaseHelper(context);
 
+        Cursor cursor = null;
 
-        Cursor cursor =
-                databaseHelper.getAllRecipes();
+        try {
 
+            cursor =
+                    databaseHelper.getAllRecipes();
 
-        boolean recipesExist =
-                cursor.moveToFirst();
+            if (cursor.moveToFirst()) {
+                return;
+            }
 
+        } finally {
 
-        cursor.close();
-
-
-        if (recipesExist) {
-
-            databaseHelper.close();
-
-            return;
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
-
-        // 1. Chicken Pasta
         addRecipe(
                 databaseHelper,
                 "Chicken Pasta",
@@ -41,8 +37,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"kg", "g", "items", "items"}
         );
 
-
-        // 2. Egg Sandwich
         addRecipe(
                 databaseHelper,
                 "Egg Sandwich",
@@ -52,8 +46,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"items", "slices", "g"}
         );
 
-
-        // 3. Cheese Omelette
         addRecipe(
                 databaseHelper,
                 "Cheese Omelette",
@@ -63,8 +55,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"items", "g", "items"}
         );
 
-
-        // 4. Chicken Rice
         addRecipe(
                 databaseHelper,
                 "Chicken Rice",
@@ -74,8 +64,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"kg", "g", "items"}
         );
 
-
-        // 5. Tomato Pasta
         addRecipe(
                 databaseHelper,
                 "Tomato Pasta",
@@ -85,8 +73,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "items", "items"}
         );
 
-
-        // 6. Chicken Sandwich
         addRecipe(
                 databaseHelper,
                 "Chicken Sandwich",
@@ -96,8 +82,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "slices", "g"}
         );
 
-
-        // 7. Egg Fried Rice
         addRecipe(
                 databaseHelper,
                 "Egg Fried Rice",
@@ -107,8 +91,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"items", "g", "items"}
         );
 
-
-        // 8. Cheese Toast
         addRecipe(
                 databaseHelper,
                 "Cheese Toast",
@@ -118,8 +100,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"slices", "g", "items"}
         );
 
-
-        // 9. Chicken Salad
         addRecipe(
                 databaseHelper,
                 "Chicken Salad",
@@ -129,8 +109,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "g", "items"}
         );
 
-
-        // 10. Vegetable Rice
         addRecipe(
                 databaseHelper,
                 "Vegetable Rice",
@@ -140,8 +118,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "items", "items"}
         );
 
-
-        // 11. Tuna Sandwich
         addRecipe(
                 databaseHelper,
                 "Tuna Sandwich",
@@ -151,8 +127,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"can", "slices", "items"}
         );
 
-
-        // 12. Chicken Wrap
         addRecipe(
                 databaseHelper,
                 "Chicken Wrap",
@@ -162,8 +136,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "items", "g"}
         );
 
-
-        // 13. Tomato Omelette
         addRecipe(
                 databaseHelper,
                 "Tomato Omelette",
@@ -173,8 +145,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"items", "items", "items"}
         );
 
-
-        // 14. Rice and Beans
         addRecipe(
                 databaseHelper,
                 "Rice and Beans",
@@ -184,8 +154,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "can", "items"}
         );
 
-
-        // 15. Chicken and Vegetables
         addRecipe(
                 databaseHelper,
                 "Chicken and Vegetables",
@@ -195,8 +163,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "items", "items"}
         );
 
-
-        // 16. Cheese Pasta
         addRecipe(
                 databaseHelper,
                 "Cheese Pasta",
@@ -206,8 +172,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "g", "ml"}
         );
 
-
-        // 17. French Toast
         addRecipe(
                 databaseHelper,
                 "French Toast",
@@ -217,8 +181,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"slices", "items", "ml"}
         );
 
-
-        // 18. Chicken Tomato Rice
         addRecipe(
                 databaseHelper,
                 "Chicken Tomato Rice",
@@ -228,8 +190,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"g", "g", "items"}
         );
 
-
-        // 19. Vegetable Omelette
         addRecipe(
                 databaseHelper,
                 "Vegetable Omelette",
@@ -239,8 +199,6 @@ public class RecipeDatabaseSeeder {
                 new String[]{"items", "items", "items"}
         );
 
-
-        // 20. Tuna Pasta
         addRecipe(
                 databaseHelper,
                 "Tuna Pasta",
@@ -250,10 +208,8 @@ public class RecipeDatabaseSeeder {
                 new String[]{"can", "g", "items"}
         );
 
-
         databaseHelper.close();
     }
-
 
     private static void addRecipe(
             DatabaseHelper databaseHelper,
@@ -263,6 +219,11 @@ public class RecipeDatabaseSeeder {
             double[] quantities,
             String[] units) {
 
+        if (ingredientNames.length != quantities.length ||
+                ingredientNames.length != units.length) {
+
+            return;
+        }
 
         long recipeId =
                 databaseHelper.addRecipe(
@@ -273,11 +234,9 @@ public class RecipeDatabaseSeeder {
                         preparationSteps
                 );
 
-
         if (recipeId == -1) {
             return;
         }
-
 
         for (int i = 0;
              i < ingredientNames.length;
@@ -292,13 +251,11 @@ public class RecipeDatabaseSeeder {
         }
     }
 
-
     private static String createIngredientText(
             String[] ingredientNames) {
 
         StringBuilder ingredients =
                 new StringBuilder();
-
 
         for (int i = 0;
              i < ingredientNames.length;
@@ -308,13 +265,10 @@ public class RecipeDatabaseSeeder {
                     ingredientNames[i]
             );
 
-
             if (i < ingredientNames.length - 1) {
-
                 ingredients.append(", ");
             }
         }
-
 
         return ingredients.toString();
     }

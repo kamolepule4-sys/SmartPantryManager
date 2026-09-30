@@ -8,45 +8,56 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddIngredientActivity extends AppCompatActivity {
 
+    private EditText ingredientNameInput;
+    private EditText quantityInput;
+    private EditText unitInput;
+    private EditText expiryDateInput;
+
+    private Spinner categorySpinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_add_ingredient);
 
-
-        EditText ingredientNameInput =
+        ingredientNameInput =
                 findViewById(R.id.ingredientNameInput);
 
-
-        EditText quantityInput =
+        quantityInput =
                 findViewById(R.id.quantityInput);
 
-
-        EditText unitInput =
+        unitInput =
                 findViewById(R.id.unitInput);
 
-
-        Spinner categorySpinner =
+        categorySpinner =
                 findViewById(R.id.categorySpinner);
 
-
-        EditText expiryDateInput =
+        expiryDateInput =
                 findViewById(R.id.expiryDateInput);
-
 
         Button saveIngredientButton =
                 findViewById(R.id.saveIngredientButton);
 
-
         Button cancelButton =
                 findViewById(R.id.cancelButton);
 
+        setupCategorySpinner();
+
+        saveIngredientButton.setOnClickListener(v ->
+                saveIngredient()
+        );
+
+        cancelButton.setOnClickListener(v ->
+                finish()
+        );
+    }
+
+    private void setupCategorySpinner() {
 
         String[] categories = {
                 "Meat",
@@ -60,7 +71,6 @@ public class AddIngredientActivity extends AppCompatActivity {
                 "Other"
         };
 
-
         ArrayAdapter<String> categoryAdapter =
                 new ArrayAdapter<>(
                         this,
@@ -68,132 +78,136 @@ public class AddIngredientActivity extends AppCompatActivity {
                         categories
                 );
 
-
         categoryAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item
         );
 
-
         categorySpinner.setAdapter(
                 categoryAdapter
         );
+    }
 
+    private void saveIngredient() {
 
-        saveIngredientButton.setOnClickListener(v -> {
+        String ingredientName =
+                ingredientNameInput
+                        .getText()
+                        .toString()
+                        .trim();
 
-            String ingredientName =
-                    ingredientNameInput
-                            .getText()
-                            .toString()
-                            .trim();
+        String quantityText =
+                quantityInput
+                        .getText()
+                        .toString()
+                        .trim();
 
+        String unit =
+                unitInput
+                        .getText()
+                        .toString()
+                        .trim();
 
-            String quantityText =
-                    quantityInput
-                            .getText()
-                            .toString()
-                            .trim();
+        String expiryDate =
+                expiryDateInput
+                        .getText()
+                        .toString()
+                        .trim();
 
+        String category =
+                categorySpinner
+                        .getSelectedItem()
+                        .toString();
 
-            String unit =
-                    unitInput
-                            .getText()
-                            .toString()
-                            .trim();
+        if (ingredientName.isEmpty()) {
 
+            ingredientNameInput.setError(
+                    "Enter an ingredient name"
+            );
 
-            String category =
-                    categorySpinner
-                            .getSelectedItem()
-                            .toString();
+            ingredientNameInput.requestFocus();
 
+            return;
+        }
 
-            String expiryDate =
-                    expiryDateInput
-                            .getText()
-                            .toString()
-                            .trim();
+        if (quantityText.isEmpty()) {
 
+            quantityInput.setError(
+                    "Enter a quantity"
+            );
 
-            if (ingredientName.isEmpty()
-                    || quantityText.isEmpty()
-                    || unit.isEmpty()) {
+            quantityInput.requestFocus();
 
-                Toast.makeText(
-                        AddIngredientActivity.this,
-                        "Please fill in the ingredient, quantity and unit.",
-                        Toast.LENGTH_SHORT
-                ).show();
+            return;
+        }
 
-                return;
-            }
+        if (unit.isEmpty()) {
 
+            unitInput.setError(
+                    "Enter a unit"
+            );
 
-            try {
+            unitInput.requestFocus();
 
-                double quantity =
-                        Double.parseDouble(
-                                quantityText
-                        );
+            return;
+        }
 
+        double quantity;
 
-                if (quantity <= 0) {
+        try {
 
-                    Toast.makeText(
-                            AddIngredientActivity.this,
-                            "Quantity must be greater than 0.",
-                            Toast.LENGTH_SHORT
-                    ).show();
+            quantity =
+                    Double.parseDouble(quantityText);
 
-                    return;
-                }
+        } catch (NumberFormatException e) {
 
+            quantityInput.setError(
+                    "Enter a valid number"
+            );
 
-                Ingredient ingredient =
-                        new Ingredient(
-                                ingredientName,
-                                quantity,
-                                unit,
-                                expiryDate,
-                                category
-                        );
+            quantityInput.requestFocus();
 
+            return;
+        }
 
-                IngredientManager.addIngredient(
-                        AddIngredientActivity.this,
-                        ingredient
+        if (quantity <= 0) {
+
+            quantityInput.setError(
+                    "Quantity must be greater than 0"
+            );
+
+            quantityInput.requestFocus();
+
+            return;
+        }
+
+        Ingredient ingredient =
+                new Ingredient(
+                        ingredientName,
+                        quantity,
+                        unit,
+                        expiryDate,
+                        category
                 );
 
+        IngredientManager.addIngredient(
+                this,
+                ingredient
+        );
 
-                Toast.makeText(
-                        AddIngredientActivity.this,
-                        "Ingredient saved successfully!",
-                        Toast.LENGTH_SHORT
-                ).show();
+        Toast.makeText(
+                this,
+                "Ingredient saved successfully!",
+                Toast.LENGTH_SHORT
+        ).show();
 
+        Intent intent =
+                new Intent(
+                        this,
+                        PantryActivity.class
+                );
 
-                Intent intent =
-                        new Intent(
-                                AddIngredientActivity.this,
-                                PantryActivity.class
-                        );
+        startActivity(intent);
 
-
-                startActivity(intent);
-
-                finish();
-
-            } catch (NumberFormatException e) {
-
-                Toast.makeText(
-                        AddIngredientActivity.this,
-                        "Please enter a valid quantity.",
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-        });
-
-
-        cancelButton.setOnClickListener(v -> finish());
+        finish();
     }
 }

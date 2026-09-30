@@ -26,94 +26,101 @@ public class RecipeMatcher {
         DatabaseHelper databaseHelper =
                 new DatabaseHelper(context);
 
+        try {
 
-        for (Recipe recipe : recipes) {
+            for (Recipe recipe : recipes) {
 
-            boolean recipeMatches = true;
+                boolean recipeMatches = true;
+                boolean hasRequiredIngredients = false;
 
-            Cursor cursor =
-                    databaseHelper.getRecipeIngredients(
-                            recipe.getId()
-                    );
-
-
-            while (cursor.moveToNext()) {
-
-                String requiredName =
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(
-                                        "ingredientName"
-                                )
+                Cursor cursor =
+                        databaseHelper.getRecipeIngredients(
+                                recipe.getId()
                         );
 
-                double requiredQuantity =
-                        cursor.getDouble(
-                                cursor.getColumnIndexOrThrow(
-                                        "requiredQuantity"
-                                )
-                        );
+                try {
 
-                String requiredUnit =
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(
-                                        "unit"
-                                )
-                        );
+                    while (cursor.moveToNext()) {
 
+                        hasRequiredIngredients = true;
 
-                boolean ingredientFound =
-                        false;
+                        String requiredName =
+                                cursor.getString(
+                                        cursor.getColumnIndexOrThrow(
+                                                "ingredientName"
+                                        )
+                                );
 
+                        double requiredQuantity =
+                                cursor.getDouble(
+                                        cursor.getColumnIndexOrThrow(
+                                                "requiredQuantity"
+                                        )
+                                );
 
-                for (Ingredient pantryIngredient :
-                        pantryIngredients) {
+                        String requiredUnit =
+                                cursor.getString(
+                                        cursor.getColumnIndexOrThrow(
+                                                "unit"
+                                        )
+                                );
 
-                    if (!sameIngredient(
-                            pantryIngredient.getName(),
-                            requiredName
-                    )) {
+                        boolean ingredientFound = false;
 
-                        continue;
+                        for (Ingredient pantryIngredient :
+                                pantryIngredients) {
+
+                            if (!sameIngredient(
+                                    pantryIngredient.getName(),
+                                    requiredName
+                            )) {
+
+                                continue;
+                            }
+
+                            if (hasEnoughQuantity(
+                                    pantryIngredient.getQuantity(),
+                                    pantryIngredient.getUnit(),
+                                    requiredQuantity,
+                                    requiredUnit
+                            )) {
+
+                                ingredientFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!ingredientFound) {
+
+                            recipeMatches = false;
+                            break;
+                        }
                     }
 
+                } finally {
 
-                    if (hasEnoughQuantity(
-                            pantryIngredient.getQuantity(),
-                            pantryIngredient.getUnit(),
-                            requiredQuantity,
-                            requiredUnit
-                    )) {
-
-                        ingredientFound = true;
-                        break;
-                    }
+                    cursor.close();
                 }
 
+                /*
+                 * A recipe must have at least one required
+                 * ingredient and every required ingredient
+                 * must be available.
+                 */
+                if (recipeMatches &&
+                        hasRequiredIngredients) {
 
-                if (!ingredientFound) {
-
-                    recipeMatches = false;
-                    break;
+                    matchingRecipes.add(recipe);
                 }
             }
 
+        } finally {
 
-            cursor.close();
-
-
-            if (recipeMatches) {
-
-                matchingRecipes.add(recipe);
-            }
+            databaseHelper.close();
         }
-
-
-        databaseHelper.close();
-
 
         return matchingRecipes;
     }
-
 
     private static boolean sameIngredient(
             String pantryName,
@@ -129,13 +136,15 @@ public class RecipeMatcher {
                         recipeName
                 );
 
-
         return pantry.equals(recipe);
     }
 
-
     private static String normalizeIngredientName(
             String name) {
+
+        if (name == null) {
+            return "";
+        }
 
         String normalized =
                 name.trim()
@@ -143,8 +152,17 @@ public class RecipeMatcher {
                                 Locale.getDefault()
                         );
 
+        normalized =
+                normalized.replaceAll(
+                        "\\s+",
+                        " "
+                );
 
-        if (normalized.endsWith("ies")) {
+        /*
+         * Handle common plural forms.
+         */
+        if (normalized.endsWith("ies") &&
+                normalized.length() > 3) {
 
             normalized =
                     normalized.substring(
@@ -152,7 +170,8 @@ public class RecipeMatcher {
                             normalized.length() - 3
                     ) + "y";
 
-        } else if (normalized.endsWith("es")) {
+        } else if (normalized.endsWith("es") &&
+                normalized.length() > 2) {
 
             normalized =
                     normalized.substring(
@@ -160,7 +179,8 @@ public class RecipeMatcher {
                             normalized.length() - 2
                     );
 
-        } else if (normalized.endsWith("s")) {
+        } else if (normalized.endsWith("s") &&
+                normalized.length() > 1) {
 
             normalized =
                     normalized.substring(
@@ -169,10 +189,8 @@ public class RecipeMatcher {
                     );
         }
 
-
         return normalized;
     }
-
 
     private static boolean hasEnoughQuantity(
             double pantryQuantity,
@@ -180,12 +198,17 @@ public class RecipeMatcher {
             double requiredQuantity,
             String requiredUnit) {
 
+        if (pantryUnit == null ||
+                requiredUnit == null) {
+
+            return false;
+        }
+
         double convertedPantryQuantity =
                 convertToBaseUnit(
                         pantryQuantity,
                         pantryUnit
                 );
-
 
         double convertedRequiredQuantity =
                 convertToBaseUnit(
@@ -193,35 +216,57 @@ public class RecipeMatcher {
                         requiredUnit
                 );
 
+        /*
+         * If both units are recognised, compare them
+         * using the same base unit.
+         */
+        if (convertedPantryQuantity >= 0 &&
+                convertedRequiredQuantity >= 0) {
 
-        if (convertedPantryQuantity == -1
-                || convertedRequiredQuantity == -1) {
+            String pantryType =
+                    getUnitType(pantryUnit);
 
-            return pantryUnit
-                    .trim()
-                    .equalsIgnoreCase(
-                            requiredUnit.trim()
-                    )
-                    && pantryQuantity >=
-                    requiredQuantity;
+            String requiredType =
+                    getUnitType(requiredUnit);
+
+            /*
+             * Do not compare unrelated units such as
+             * kilograms with cans.
+             */
+            if (!pantryType.equals(requiredType)) {
+                return false;
+            }
+
+            return convertedPantryQuantity >=
+                    convertedRequiredQuantity;
         }
 
-
-        return convertedPantryQuantity >=
-                convertedRequiredQuantity;
+        /*
+         * For custom units, only match when the unit
+         * names are exactly the same.
+         */
+        return pantryUnit
+                .trim()
+                .equalsIgnoreCase(
+                        requiredUnit.trim()
+                )
+                &&
+                pantryQuantity >= requiredQuantity;
     }
-
 
     private static double convertToBaseUnit(
             double quantity,
             String unit) {
+
+        if (unit == null) {
+            return -1;
+        }
 
         String normalizedUnit =
                 unit.trim()
                         .toLowerCase(
                                 Locale.getDefault()
                         );
-
 
         switch (normalizedUnit) {
 
@@ -251,6 +296,46 @@ public class RecipeMatcher {
 
             default:
                 return -1;
+        }
+    }
+
+    private static String getUnitType(
+            String unit) {
+
+        if (unit == null) {
+            return "";
+        }
+
+        String normalizedUnit =
+                unit.trim()
+                        .toLowerCase(
+                                Locale.getDefault()
+                        );
+
+        switch (normalizedUnit) {
+
+            case "kg":
+            case "g":
+                return "weight";
+
+            case "l":
+            case "ml":
+                return "volume";
+
+            case "item":
+            case "items":
+                return "item";
+
+            case "slice":
+            case "slices":
+                return "slice";
+
+            case "can":
+            case "cans":
+                return "can";
+
+            default:
+                return normalizedUnit;
         }
     }
 }

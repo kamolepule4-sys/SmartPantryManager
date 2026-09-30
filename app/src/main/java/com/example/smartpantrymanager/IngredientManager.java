@@ -10,7 +10,6 @@ public class IngredientManager {
     private static final ArrayList<Ingredient> ingredients =
             new ArrayList<>();
 
-
     public static void addIngredient(
             Context context,
             Ingredient ingredient) {
@@ -18,29 +17,24 @@ public class IngredientManager {
         DatabaseHelper databaseHelper =
                 new DatabaseHelper(context);
 
-        long id =
-                databaseHelper.addIngredient(
-                        ingredient.getName(),
-                        ingredient.getQuantity(),
-                        ingredient.getUnit(),
-                        ingredient.getExpiryDate(),
-                        ingredient.getCategory()
-                );
+        databaseHelper.addIngredient(
+                ingredient.getName(),
+                ingredient.getQuantity(),
+                ingredient.getUnit(),
+                ingredient.getExpiryDate(),
+                ingredient.getCategory()
+        );
 
         databaseHelper.close();
 
         loadIngredients(context);
     }
 
-
     public static ArrayList<Ingredient> getIngredients() {
-
         return ingredients;
     }
 
-
-    public static void loadIngredients(
-            Context context) {
+    public static void loadIngredients(Context context) {
 
         ingredients.clear();
 
@@ -50,76 +44,59 @@ public class IngredientManager {
         Cursor cursor =
                 databaseHelper.getAllIngredients();
 
+        try {
 
-        while (cursor.moveToNext()) {
+            while (cursor.moveToNext()) {
 
-            int id =
-                    cursor.getInt(
-                            cursor.getColumnIndexOrThrow(
-                                    "id"
-                            )
-                    );
+                int id =
+                        cursor.getInt(
+                                cursor.getColumnIndexOrThrow("id")
+                        );
 
+                String name =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("name")
+                        );
 
-            String name =
-                    cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                    "name"
-                            )
-                    );
+                double quantity =
+                        cursor.getDouble(
+                                cursor.getColumnIndexOrThrow("quantity")
+                        );
 
+                String unit =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("unit")
+                        );
 
-            double quantity =
-                    cursor.getDouble(
-                            cursor.getColumnIndexOrThrow(
-                                    "quantity"
-                            )
-                    );
+                String expiryDate =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("expiryDate")
+                        );
 
+                String category =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("category")
+                        );
 
-            String unit =
-                    cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                    "unit"
-                            )
-                    );
+                Ingredient ingredient =
+                        new Ingredient(
+                                id,
+                                name,
+                                quantity,
+                                unit,
+                                expiryDate,
+                                category
+                        );
 
+                ingredients.add(ingredient);
+            }
 
-            String expiryDate =
-                    cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                    "expiryDate"
-                            )
-                    );
+        } finally {
 
-
-            String category =
-                    cursor.getString(
-                            cursor.getColumnIndexOrThrow(
-                                    "category"
-                            )
-                    );
-
-
-            Ingredient ingredient =
-                    new Ingredient(
-                            id,
-                            name,
-                            quantity,
-                            unit,
-                            expiryDate,
-                            category
-                    );
-
-
-            ingredients.add(ingredient);
+            cursor.close();
+            databaseHelper.close();
         }
-
-
-        cursor.close();
-        databaseHelper.close();
     }
-
 
     public static void deleteIngredient(
             Context context,
@@ -131,25 +108,20 @@ public class IngredientManager {
             return;
         }
 
-
         Ingredient ingredient =
                 ingredients.get(position);
 
-
         DatabaseHelper databaseHelper =
                 new DatabaseHelper(context);
-
 
         databaseHelper.deleteIngredient(
                 ingredient.getId()
         );
 
-
         databaseHelper.close();
 
         loadIngredients(context);
     }
-
 
     public static void updateIngredient(
             Context context,
@@ -166,14 +138,11 @@ public class IngredientManager {
             return;
         }
 
-
         Ingredient ingredient =
                 ingredients.get(position);
 
-
         DatabaseHelper databaseHelper =
                 new DatabaseHelper(context);
-
 
         databaseHelper.updateIngredient(
                 ingredient.getId(),
@@ -184,9 +153,19 @@ public class IngredientManager {
                 category
         );
 
-
         databaseHelper.close();
 
         loadIngredients(context);
+    }
+
+    public static Ingredient getIngredient(int position) {
+
+        if (position < 0 ||
+                position >= ingredients.size()) {
+
+            return null;
+        }
+
+        return ingredients.get(position);
     }
 }

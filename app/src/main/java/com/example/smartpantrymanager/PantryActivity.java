@@ -2,8 +2,6 @@ package com.example.smartpantrymanager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,119 +26,65 @@ import java.util.concurrent.TimeUnit;
 public class PantryActivity extends AppCompatActivity {
 
     private LinearLayout ingredientList;
-    private Button addIngredientButton;
-    private Button viewSuggestedRecipesButton;
     private EditText searchInput;
     private Spinner categoryFilterSpinner;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(
-                R.layout.activity_pantry
-        );
-
+        setContentView(R.layout.activity_pantry);
 
         ingredientList =
-                findViewById(
-                        R.id.ingredientList
-                );
+                findViewById(R.id.ingredientList);
 
-        addIngredientButton =
-                findViewById(
-                        R.id.addIngredientButton
-                );
+        Button addIngredientButton =
+                findViewById(R.id.addIngredientButton);
 
-        viewSuggestedRecipesButton =
-                findViewById(
-                        R.id.viewSuggestedRecipesButton
-                );
+        Button viewSuggestedRecipesButton =
+                findViewById(R.id.viewSuggestedRecipesButton);
 
         searchInput =
-                findViewById(
-                        R.id.searchInput
-                );
+                findViewById(R.id.searchInput);
 
         categoryFilterSpinner =
-                findViewById(
-                        R.id.categoryFilterSpinner
-                );
+                findViewById(R.id.categoryFilterSpinner);
 
+        setupCategoryFilter();
 
-        RecipeDatabaseSeeder.seedRecipes(
-                this
-        );
+        addIngredientButton.setOnClickListener(v -> {
 
+            Intent intent =
+                    new Intent(
+                            PantryActivity.this,
+                            AddIngredientActivity.class
+                    );
 
-        IngredientManager.loadIngredients(
-                this
-        );
+            startActivity(intent);
+        });
 
+        viewSuggestedRecipesButton.setOnClickListener(v -> {
 
-        String[] categories = {
-                "All Categories",
-                "Meat",
-                "Dairy",
-                "Vegetables",
-                "Fruit",
-                "Grains",
-                "Canned",
-                "Snacks",
-                "Drinks",
-                "Other"
-        };
+            Intent intent =
+                    new Intent(
+                            PantryActivity.this,
+                            SuggestedRecipesActivity.class
+                    );
 
+            startActivity(intent);
+        });
 
-        ArrayAdapter<String> categoryAdapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        categories
-                );
+        searchInput.setOnEditorActionListener(
+                (v, actionId, event) -> {
 
+                    displayIngredients();
 
-        categoryAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
-
-        categoryFilterSpinner.setAdapter(
-                categoryAdapter
-        );
-
-
-        addIngredientButton.setOnClickListener(
-                v -> {
-
-                    Intent intent =
-                            new Intent(
-                                    PantryActivity.this,
-                                    AddIngredientActivity.class
-                            );
-
-                    startActivity(intent);
+                    return false;
                 }
         );
-
-
-        viewSuggestedRecipesButton.setOnClickListener(
-                v -> {
-
-                    Intent intent =
-                            new Intent(
-                                    PantryActivity.this,
-                                    SuggestedRecipesActivity.class
-                            );
-
-                    startActivity(intent);
-                }
-        );
-
 
         searchInput.addTextChangedListener(
-                new TextWatcher() {
+                new android.text.TextWatcher() {
 
                     @Override
                     public void beforeTextChanged(
@@ -149,7 +93,6 @@ public class PantryActivity extends AppCompatActivity {
                             int count,
                             int after) {
                     }
-
 
                     @Override
                     public void onTextChanged(
@@ -161,14 +104,12 @@ public class PantryActivity extends AppCompatActivity {
                         displayIngredients();
                     }
 
-
                     @Override
                     public void afterTextChanged(
-                            Editable s) {
+                            android.text.Editable s) {
                     }
                 }
         );
-
 
         categoryFilterSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
@@ -183,58 +124,81 @@ public class PantryActivity extends AppCompatActivity {
                         displayIngredients();
                     }
 
-
                     @Override
                     public void onNothingSelected(
                             AdapterView<?> parent) {
                     }
                 }
         );
+    }
 
+    private void setupCategoryFilter() {
+
+        String[] categories = {
+                "All Categories",
+                "Meat",
+                "Dairy",
+                "Vegetables",
+                "Fruit",
+                "Grains",
+                "Canned",
+                "Snacks",
+                "Drinks",
+                "Other"
+        };
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        categories
+                );
+
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        categoryFilterSpinner.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        IngredientManager.loadIngredients(this);
 
         displayIngredients();
     }
-
 
     private void displayIngredients() {
 
         ingredientList.removeAllViews();
 
-
         ArrayList<Ingredient> ingredients =
                 IngredientManager.getIngredients();
-
-
-        LayoutInflater inflater =
-                LayoutInflater.from(this);
-
 
         String searchText =
                 searchInput
                         .getText()
                         .toString()
                         .trim()
-                        .toLowerCase(
-                                Locale.getDefault()
-                        );
-
+                        .toLowerCase(Locale.getDefault());
 
         String selectedCategory =
                 categoryFilterSpinner
                         .getSelectedItem()
                         .toString();
 
-
         boolean foundIngredient = false;
 
+        LayoutInflater inflater =
+                LayoutInflater.from(this);
 
-        for (int i = 0;
-             i < ingredients.size();
-             i++) {
+        for (int i = 0; i < ingredients.size(); i++) {
 
             Ingredient ingredient =
                     ingredients.get(i);
-
 
             String ingredientName =
                     ingredient.getName()
@@ -242,25 +206,19 @@ public class PantryActivity extends AppCompatActivity {
                                     Locale.getDefault()
                             );
 
-
             String ingredientCategory =
                     ingredient.getCategory();
 
-
             boolean matchesSearch =
-                    ingredientName.contains(
-                            searchText
-                    );
-
+                    ingredientName.contains(searchText);
 
             boolean matchesCategory =
                     selectedCategory.equals(
                             "All Categories"
                     )
-                            || ingredientCategory.equals(
-                            selectedCategory
+                            || selectedCategory.equals(
+                            ingredientCategory
                     );
-
 
             if (!matchesSearch ||
                     !matchesCategory) {
@@ -268,9 +226,7 @@ public class PantryActivity extends AppCompatActivity {
                 continue;
             }
 
-
             foundIngredient = true;
-
 
             View ingredientView =
                     inflater.inflate(
@@ -279,164 +235,110 @@ public class PantryActivity extends AppCompatActivity {
                             false
                     );
 
-
             TextView ingredientNameText =
                     ingredientView.findViewById(
                             R.id.ingredientNameText
                     );
-
 
             TextView ingredientCategoryText =
                     ingredientView.findViewById(
                             R.id.ingredientCategoryText
                     );
 
-
             TextView ingredientQuantityText =
                     ingredientView.findViewById(
                             R.id.ingredientQuantityText
                     );
-
 
             TextView ingredientExpiryText =
                     ingredientView.findViewById(
                             R.id.ingredientExpiryText
                     );
 
-
-            Button editIngredientButton =
+            Button editButton =
                     ingredientView.findViewById(
                             R.id.editIngredientButton
                     );
 
-
-            Button deleteIngredientButton =
+            Button deleteButton =
                     ingredientView.findViewById(
                             R.id.deleteIngredientButton
                     );
 
-
             ingredientNameText.setText(
                     ingredient.getName()
             );
-
 
             ingredientCategoryText.setText(
                     "Category: "
                             + ingredient.getCategory()
             );
 
-
             ingredientQuantityText.setText(
                     "Quantity: "
-                            + ingredient.getQuantity()
+                            + formatQuantity(
+                            ingredient.getQuantity()
+                    )
                             + " "
                             + ingredient.getUnit()
             );
-
 
             setExpiryMessage(
                     ingredientExpiryText,
                     ingredient.getExpiryDate()
             );
 
+            final int ingredientPosition = i;
 
-            int position = i;
+            editButton.setOnClickListener(v -> {
 
-
-            editIngredientButton.setOnClickListener(
-                    v -> {
-
-                        Intent intent =
-                                new Intent(
-                                        PantryActivity.this,
-                                        EditIngredientActivity.class
-                                );
-
-
-                        intent.putExtra(
-                                "ingredientPosition",
-                                position
+                Intent intent =
+                        new Intent(
+                                PantryActivity.this,
+                                EditIngredientActivity.class
                         );
 
+                intent.putExtra(
+                        "ingredientPosition",
+                        ingredientPosition
+                );
 
-                        startActivity(intent);
-                    }
-            );
+                startActivity(intent);
+            });
 
+            deleteButton.setOnClickListener(v -> {
 
-            deleteIngredientButton.setOnClickListener(
-                    v -> {
-
-                        new AlertDialog.Builder(
-                                PantryActivity.this
-                        )
-                                .setTitle(
-                                        "Delete ingredient?"
-                                )
-                                .setMessage(
-                                        "Are you sure you want to delete "
-                                                + ingredient.getName()
-                                                + "?"
-                                )
-                                .setPositiveButton(
-                                        "Delete",
-                                        (dialog, which) -> {
-
-                                            IngredientManager
-                                                    .deleteIngredient(
-                                                            PantryActivity.this,
-                                                            position
-                                                    );
-
-
-                                            Toast.makeText(
-                                                    PantryActivity.this,
-                                                    "Ingredient deleted.",
-                                                    Toast.LENGTH_SHORT
-                                            ).show();
-
-
-                                            displayIngredients();
-                                        }
-                                )
-                                .setNegativeButton(
-                                        "Cancel",
-                                        null
-                                )
-                                .show();
-                    }
-            );
-
+                showDeleteConfirmation(
+                        ingredient,
+                        ingredientPosition
+                );
+            });
 
             ingredientList.addView(
                     ingredientView
             );
         }
 
-
         if (!foundIngredient) {
 
             TextView emptyMessage =
                     new TextView(this);
 
-
             if (ingredients.isEmpty()) {
 
                 emptyMessage.setText(
-                        "Your pantry is empty."
+                        "Your pantry is empty.\n\n" +
+                                "Add an ingredient to get started."
                 );
 
             } else {
 
                 emptyMessage.setText(
-                        "No ingredients found."
+                        "No ingredients match your search."
                 );
             }
 
-
-            emptyMessage.setTextSize(18);
-
+            emptyMessage.setTextSize(17);
 
             emptyMessage.setTextColor(
                     getResources().getColor(
@@ -444,6 +346,12 @@ public class PantryActivity extends AppCompatActivity {
                     )
             );
 
+            emptyMessage.setPadding(
+                    0,
+                    20,
+                    0,
+                    20
+            );
 
             ingredientList.addView(
                     emptyMessage
@@ -451,13 +359,61 @@ public class PantryActivity extends AppCompatActivity {
         }
     }
 
+    private String formatQuantity(double quantity) {
+
+        if (quantity == (long) quantity) {
+
+            return String.valueOf(
+                    (long) quantity
+            );
+        }
+
+        return String.valueOf(quantity);
+    }
+
+    private void showDeleteConfirmation(
+            Ingredient ingredient,
+            int position) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete ingredient?")
+                .setMessage(
+                        "Are you sure you want to delete "
+                                + ingredient.getName()
+                                + "?"
+                )
+                .setPositiveButton(
+                        "Delete",
+                        (dialog, which) -> {
+
+                            IngredientManager
+                                    .deleteIngredient(
+                                            PantryActivity.this,
+                                            position
+                                    );
+
+                            Toast.makeText(
+                                    PantryActivity.this,
+                                    "Ingredient deleted.",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            displayIngredients();
+                        }
+                )
+                .setNegativeButton(
+                        "Cancel",
+                        null
+                )
+                .show();
+    }
 
     private void setExpiryMessage(
             TextView expiryText,
             String expiryDate) {
 
         if (expiryDate == null ||
-                expiryDate.isEmpty()) {
+                expiryDate.trim().isEmpty()) {
 
             expiryText.setText(
                     "No expiry date"
@@ -466,39 +422,41 @@ public class PantryActivity extends AppCompatActivity {
             return;
         }
 
-
         SimpleDateFormat dateFormat =
                 new SimpleDateFormat(
                         "yyyy-MM-dd",
                         Locale.getDefault()
                 );
 
-
         dateFormat.setLenient(false);
-
 
         try {
 
             Date expiry =
                     dateFormat.parse(
-                            expiryDate
+                            expiryDate.trim()
                     );
 
+            if (expiry == null) {
+
+                expiryText.setText(
+                        "Expiry: " + expiryDate
+                );
+
+                return;
+            }
 
             Date today =
                     new Date();
-
 
             long difference =
                     expiry.getTime()
                             - today.getTime();
 
-
             long daysUntilExpiry =
                     TimeUnit.MILLISECONDS.toDays(
                             difference
                     );
-
 
             if (daysUntilExpiry < 0) {
 
@@ -522,32 +480,12 @@ public class PantryActivity extends AppCompatActivity {
                 );
             }
 
-
         } catch (ParseException e) {
 
             expiryText.setText(
                     "Expiry: "
                             + expiryDate
             );
-        }
-    }
-
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-
-        if (searchInput != null &&
-                categoryFilterSpinner != null) {
-
-            IngredientManager.loadIngredients(
-                    this
-            );
-
-
-            displayIngredients();
         }
     }
 }
